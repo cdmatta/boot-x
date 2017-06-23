@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" ng-app="samApp">
+<head>
+<meta charset="utf-8">
+<title>Site Availability</title>
+
+<script src="/webjars/angularjs/1.6.4/angular.min.js"></script>
+<script src="/webjars/angularjs/1.6.4/angular-resource.min.js"></script>
+
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<script src="/js/app.js"></script>
+<script src="/js/services.js"></script>
+</head>
+
+<body style="padding-top:10px">
+	<div ng-controller="StatusResourceCtrl" class="container">
+		<form>
+			<div class="form-group">
+				<div class="input-group">
+					<div class="input-group-addon"><i class="fa fa-search"></i></div>
+					<input type="text" class="form-control" placeholder="Search" ng-model="searchString">
+				</div>
+			</div>
+		</form>
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+				<tr>
+					<td>
+						URL
+					</td>
+					<td>
+						<a href="" ng-click="sortType = 'recentFailureCount'; sortReverse = !sortReverse">
+							Recent Failure Count
+							<span ng-show="sortType == 'recentFailureCount' && !sortReverse" class="fa fa-caret-down"></span>
+							<span ng-show="sortType == 'recentFailureCount' && sortReverse" class="fa fa-caret-up"></span>
+						</a>
+					</td>
+					<td>
+						Down since
+					</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="w in webpages | orderBy:sortType:sortReverse | filter:searchString" ng-class="{'danger': w.recentFailureCount > 0 }">
+					<td>{{ w.url }}</td>
+					<td>{{ w.recentFailureCount }}</td>
+					<td>{{ w.downSince }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
