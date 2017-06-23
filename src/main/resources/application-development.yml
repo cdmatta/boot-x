@@ -1,3 +1,13 @@
+monitoringSettings:
+  pollingFrequencyCronExpression: 0,15,30,45 * * * * *
+  timeOutForPollRequestSeconds: 5
+
 webpages:
   -
-    url: https://medium.com/@charandeep.matta
+    url: http://start.spring.io/
+  -
+    url: https://facebook.github.io/react/
+  -
+    url: https://angular.io/
+  -
+    url: http://somerandomnotavailablesite.com/

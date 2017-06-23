@@ -2,24 +2,58 @@ package com.charandeepmatta.sam.monitoring;
 
 import static java.lang.System.currentTimeMillis;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
+import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
 @Setter
-public class HttpService extends MonitorableService {
+@ToString
+public class HttpService {
+
+  private int recentFailureCount = 0;
+
+  private Optional<LocalDateTime> downtimeStart = empty();
 
   private URL url;
 
-  @Override
+  public void resetFailureCountersOnSuccess() {
+    recentFailureCount = 0;
+    downtimeStart = empty();
+  }
+
+  public void updateFailureCounters(final LocalDateTime monitoringStartTime) {
+    ++recentFailureCount;
+    if (downtimeStart.isPresent()) {
+      return;
+    }
+    downtimeStart = of(monitoringStartTime);
+  }
+
+  public boolean serviceIsUp() {
+    return recentFailureCount == 0;
+  }
+
+  /**
+   * Check the service availability.
+   * 
+   * @param timeoutSeconds Max seconds the thread will wait before assuming service is down
+   * @return True if service is up. False otherwise
+   */
   public boolean checkStatus(final int timeoutSeconds) {
     HttpURLConnection connection = null;
     long startMillis = currentTimeMillis();
@@ -34,6 +68,7 @@ public class HttpService extends MonitorableService {
       inputStream = connection.getInputStream();
       long duration = currentTimeMillis() - startMillis;
       log.info("Result up=true url={} responseCode={} took={} ms ", url, responseCode, duration);
+      return true;
     } catch (Exception e) {
       log.error("Result up=false. Exception when checking url=" + url, e);
     } finally {
@@ -57,5 +92,15 @@ public class HttpService extends MonitorableService {
     connection.setReadTimeout(timeoutMillis);
     connection.connect();
     return connection;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return reflectionEquals(this, obj, "recentFailureCount", "downtimeStart");
+  }
+
+  @Override
+  public int hashCode() {
+    return reflectionHashCode(this, "recentFailureCount", "downtimeStart");
   }
 }
