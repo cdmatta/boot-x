@@ -75,7 +75,7 @@ public class HttpService {
       inputStream = connection.getInputStream();
       boolean contentIsValid = isInputStreamContentValid(inputStream);
       long duration = currentTimeMillis() - startMillis;
-      log.info("Result up={} url={} responseCode={} took={} ms", contentIsValid, url, responseCode, duration);
+      log.info("Result url={} responseCode={} validContent={} took={} ms", url, responseCode, contentIsValid, duration);
       return contentIsValid;
     } catch (Exception e) {
       log.error("Result up=false. Exception when checking url=" + url, e);
