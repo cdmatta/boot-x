@@ -4,6 +4,8 @@ import static java.lang.System.currentTimeMillis;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.apache.commons.lang3.StringUtils.contains;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 
@@ -11,8 +13,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import org.apache.commons.io.IOUtils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +35,8 @@ public class HttpService {
   private Optional<LocalDateTime> downtimeStart = empty();
 
   private URL url;
+
+  private String mandatoryContent;
 
   public void resetFailureCountersOnSuccess() {
     recentFailureCount = 0;
@@ -66,9 +73,10 @@ public class HttpService {
         return false;
       }
       inputStream = connection.getInputStream();
+      boolean contentIsValid = isInputStreamContentValid(inputStream);
       long duration = currentTimeMillis() - startMillis;
-      log.info("Result up=true url={} responseCode={} took={} ms ", url, responseCode, duration);
-      return true;
+      log.info("Result up={} url={} responseCode={} took={} sec ", contentIsValid, url, responseCode, duration);
+      return contentIsValid;
     } catch (Exception e) {
       log.error("Result up=false. Exception when checking url=" + url, e);
     } finally {
@@ -83,6 +91,15 @@ public class HttpService {
       }
     }
     return false;
+  }
+
+  private boolean isInputStreamContentValid(InputStream inputStream) {
+    try {
+      String htmlPage = trimToEmpty(IOUtils.toString(inputStream, Charset.defaultCharset()));
+      return contains(htmlPage, mandatoryContent);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to read content", e);
+    }
   }
 
   protected HttpURLConnection openConnection(final int timeoutSeconds) throws IOException {

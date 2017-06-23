@@ -5,9 +5,16 @@ monitoringSettings:
 webpages:
   -
     url: http://start.spring.io/
+    mandatoryContent: "Secure your application"
   -
     url: https://facebook.github.io/react/
+    mandatoryContent: "painless"
   -
     url: https://angular.io/
+    mandatoryContent: "One framework."
   -
-    url: http://somerandomnotavailablesite.com/
+    url: https://www.oracle.com/
+    mandatoryContent: "unmatched content by charandeep test."
+  -
+    url: https://somerandomnotavailablesite.com/
+    mandatoryContent: "content does not matter here"
