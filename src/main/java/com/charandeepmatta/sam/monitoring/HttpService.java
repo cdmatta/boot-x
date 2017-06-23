@@ -15,9 +15,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @ToString
 public class HttpService {
+
+  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
   private int recentFailureCount = 0;
 
@@ -49,6 +55,11 @@ public class HttpService {
       return;
     }
     downtimeStart = of(monitoringStartTime);
+  }
+
+  @JsonView
+  public String downSince() {
+    return downtimeStart.map(v -> v.format(FORMATTER)).orElse("");
   }
 
   public boolean serviceIsUp() {
