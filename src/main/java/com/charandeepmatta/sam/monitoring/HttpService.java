@@ -15,10 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Getter
 @Setter
-public class HttpService {
+public class HttpService extends MonitorableService {
 
   private URL url;
 
+  @Override
   public boolean checkStatus(final int timeoutSeconds) {
     HttpURLConnection connection = null;
     long startMillis = currentTimeMillis();
