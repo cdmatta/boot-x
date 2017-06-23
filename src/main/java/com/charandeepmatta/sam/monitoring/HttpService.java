@@ -35,14 +35,15 @@ public class HttpService {
 
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+  private URL url;
+
+  private String mandatoryContent;
 
   private int recentFailureCount = 0;
 
   private Optional<LocalDateTime> downtimeStart = empty();
 
-  private URL url;
-
-  private String mandatoryContent;
+  private String lastFailureDetail;
 
   public void resetFailureCountersOnSuccess() {
     recentFailureCount = 0;
@@ -81,15 +82,18 @@ public class HttpService {
       int responseCode = connection.getResponseCode();
       if (responseCode != HTTP_OK) {
         log.error("Result up=false url={} responseCode={}", url, responseCode);
+        lastFailureDetail = "Response code " + responseCode + " != HTTP OK/200";
         return false;
       }
       inputStream = connection.getInputStream();
       boolean contentIsValid = isInputStreamContentValid(inputStream);
       long duration = currentTimeMillis() - startMillis;
       log.info("Result url={} responseCode={} validContent={} took={} ms", url, responseCode, contentIsValid, duration);
+      lastFailureDetail = contentIsValid ? "" : "Page does not contain required text";
       return contentIsValid;
     } catch (Exception e) {
       log.error("Result up=false. Exception when checking url=" + url, e);
+      lastFailureDetail = "Failure in http connection/reading page contents";
     } finally {
       if (inputStream != null) {
         try {

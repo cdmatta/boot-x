@@ -87,6 +87,7 @@ public class SiteAvailabilityJob {
       } catch (Exception e) {
         log.error("DOWN (timeout exceeded) " + service);
         futureResult.cancel(true);
+        service.setLastFailureDetail("Timeout exceeded");
       }
       service.updateFailureCounters(monitoringStartTime);
     });
