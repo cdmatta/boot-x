@@ -39,7 +39,7 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
     executor.setCorePoolSize(getIntegerConfigProperty("corePoolSize", 200));
     executor.setMaxPoolSize(getIntegerConfigProperty("maxPoolSize", 500));
     executor.setQueueCapacity(getIntegerConfigProperty("queueCapacity", 10000));
-    executor.setThreadNamePrefix("cmatta-Executor-");
+    executor.setThreadNamePrefix("cm-executor-");
     return new ExceptionHandlingAsyncTaskExecutor(executor);
   }
 
