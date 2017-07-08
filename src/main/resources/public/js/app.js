@@ -1,4 +1,12 @@
-var samApp = angular.module('samApp', ['samServices']);
+var samApp = angular.module('samApp', ['ngResource']);
+
+samApp.factory('StatusResourceService', ['$resource', function($resource) {
+	return {
+		status: $resource('/status', {}, {
+			query: {method: 'GET',  params: {}, isArray: true}
+		}),
+	};
+}]);
 
 samApp.controller('StatusResourceCtrl', [ '$scope', 'StatusResourceService', '$interval', function($scope, StatusResourceService, $interval) {
 	$scope.sortType = 'recentFailureCount';
@@ -15,12 +23,3 @@ samApp.controller('StatusResourceCtrl', [ '$scope', 'StatusResourceService', '$i
 		});
 	}, 10 * 1000);
 }]);
-
-samApp.factory('StatusResourceService', ['$resource', function($resource) {
-	return {
-		status: $resource('/status', {}, {
-			query: {method: 'GET',  params: {}, isArray: true}
-		}),
-	};
-}]);
-
