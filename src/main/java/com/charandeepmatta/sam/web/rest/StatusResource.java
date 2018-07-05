@@ -6,12 +6,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.charandeepmatta.sam.config.MonitoringConfiguration;
 import com.charandeepmatta.sam.monitoring.HttpService;
 
 @RestController
+@RequestMapping("/api")
 public class StatusResource {
 
   private List<HttpService> webpages;
@@ -21,7 +23,7 @@ public class StatusResource {
     webpages = monitoringConfiguration.getWebpages();
   }
 
-  @GetMapping(value = "/status", produces = APPLICATION_JSON_VALUE)
+  @GetMapping(value = "status", produces = APPLICATION_JSON_VALUE)
   public List<HttpService> getStatus() {
     return webpages;
   }
