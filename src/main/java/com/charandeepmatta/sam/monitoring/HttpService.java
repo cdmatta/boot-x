@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 @Getter
@@ -109,6 +110,9 @@ public class HttpService {
   }
 
   private boolean isInputStreamContentValid(InputStream inputStream) {
+    if (StringUtils.isBlank(mandatoryContent)) {
+      return true;
+    }
     try {
       String htmlPage = trimToEmpty(IOUtils.toString(inputStream, Charset.defaultCharset()));
       return contains(htmlPage, mandatoryContent);
